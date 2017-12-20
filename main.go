@@ -1,11 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	matrix := inputMatrix()
 	displayMatrix(matrix)
-	detMatrix(matrix)
+
+	fmt.Printf("%d", detMatrix(matrix))
 }
 
 func inputMatrix() [][]int {
@@ -44,17 +47,18 @@ func displayMatrix(matrix [][]int) {
 	}
 }
 
-func detMatrix(matrix [][]int) {
-	m, n := directionMatrixSize(matrix)
-	if m != n {
-		panic("m != n")
-	}
+func detMatrix(matrix [][]int) int {
+	m, _ := directionMatrixSize(matrix)
+	var det int
 	if m == 1 {
+		det = matrix[0][0]
 	} else {
 		for i := 0; i < m; i++ {
-			displayMatrix(subMatrix(matrix, 1, i))
+			displayMatrix(subMatrix(matrix, 0, i))
+			det += isOne(1+i+1) * matrix[0][i] * detMatrix(subMatrix(matrix, 0, i))
 		}
 	}
+	return det
 }
 
 func directionMatrixSize(matrix [][]int) (int, int) {
@@ -66,21 +70,28 @@ func subMatrix(matrix [][]int, withoutRow int, withoutCol int) [][]int {
 	var newMatrix = make([][]int, m-1, m-1)
 	var k, l int
 	for i := 0; i < m; i++ {
-		if i == withoutRow-1 {
+		if i == withoutRow {
 			continue
 		}
 		l = 0
 		var rowNewMatrix = make([]int, m-1, m-1)
 		for j := 0; j < m; j++ {
-			if j == withoutCol-1 {
+			if j == withoutCol {
 				continue
 			}
 			rowNewMatrix[l] = matrix[i][j]
 			l++
 		}
-		k++
 		newMatrix[k] = rowNewMatrix
+		k++
 	}
 
 	return newMatrix
+}
+
+func isOne(number int) int {
+	if number%2 == 1 {
+		return -1
+	}
+	return 1
 }
